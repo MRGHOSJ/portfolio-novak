@@ -1,0 +1,23 @@
+/* Animation Type: DEFAULT */
+.de_reveal_animation_yes:not(.elementor-element-edit-mode):not(.de_reveal_animation_type_letter):not(.de_reveal_animation_type_blockcurtain) > .elementor-widget-container {
+    position: relative;
+    opacity: 0;
+}
+
+.de_reveal_animation_yes.de_reveal_animation_type_default.de_reveal_stagger_yes:not(.elementor-element-edit-mode) > .elementor-container > .elementor-row > .elementor-column {
+    opacity: 0;
+}
+
+.elementor-section.de_reveal_animation_yes.de_reveal_animation_type_default:not(.elementor-element-edit-mode) > .elementor-container > .elementor-row > .elementor-column {
+    opacity: 0;
+}
+
+/* Animation Type: BLOCK CURTAIN */
+.de_reveal_animation_yes.de_reveal_animation_type_blockcurtain:not(.elementor-element-edit-mode) > .elementor-widget-container {
+    opacity: 0;
+}
+
+/* Animation Type: LETTER */
+.de_reveal_animation_yes.de_reveal_animation_type_letter > .elementor-widget-container * {
+    white-space: pre;
+}

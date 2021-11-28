@@ -1,0 +1,1085 @@
+var animNodes
+var observersDefault = []
+var observersCurtain = []
+var observersLetter = []
+var observerOptions = {
+  rootMargin: '0px',
+  threshold: 1
+}
+
+function observerCallbackDefault(entries, observer) {
+  entries.forEach(function (entry) {
+    var element = entry.target;
+
+    // To be implemented later:
+    var infinite = element.hasAttribute("data-anim-infinite") ? true : false;
+
+    var animation_style = element.getAttribute("data-de-reveal-animation-style")
+    var duration = element.getAttribute("data-de-reveal-duration")
+    var direction = element.getAttribute("data-de-reveal-direction")
+    var easing = element.getAttribute("data-de-reveal-easing")
+    var loop = element.getAttribute("data-de-reveal-animation-loop")
+    var id = element.getAttribute("data-id")
+
+    var is_section = element.hasAttribute("data-de-reveal-section") ? true : false;
+    var is_stagger = element.hasAttribute("data-de-reveal-stagger") ? true : false;
+
+    if (entry.isIntersecting) {
+      var animated
+      var delay = 0
+
+      if (is_stagger) {
+        animated = element.querySelectorAll(".elementor-column")
+      } else {
+        if (is_section) {
+          animated = element.querySelectorAll(".elementor-column")
+        } else {
+          animated = element.querySelectorAll(".elementor-widget-container")
+        }
+      }
+
+      Array.prototype.forEach.call(animated, function(el, i){
+        if (is_stagger) {
+          delay = delay + 200
+        } else {
+          delay = 0
+        }
+
+        switch (animation_style) {
+          case 'fu':
+            var animObj = {
+              targets: el,
+              duration: duration,
+              delay: delay,
+              direction: direction,
+              loop: loop,
+              opacity: {
+                  value: 1,
+                  easing: easing
+              },
+              translateX: { value: 0 },
+              translateY: {
+                  value: -500,
+                  duration: duration
+              },
+            }
+            break;
+          case 'fd':
+            var animObj = {
+              targets: el,
+              duration: duration,
+              delay: delay,
+              direction: direction,
+              loop: loop,
+              opacity: {
+                  value: 1,
+                  easing: easing
+              },
+              translateX: { value: 0 },
+              translateY: {
+                  value: 500,
+                  duration: duration
+              },
+            }                                                          
+            break;
+          case 'fl':
+            var animObj = {
+              targets: el,
+              duration: duration,
+              delay: delay,
+              direction: direction,
+              loop: loop,
+              opacity: {
+                  value: 1,
+                  easing: easing
+              },
+              translateX: {
+                  value: -500,
+                  duration: duration
+              },
+              translateY: { value: 0 },
+            }                             
+            break;
+          case 'fr':
+            var animObj = {
+              targets: el,
+              duration: duration,
+              delay: delay,
+              direction: direction,
+              loop: loop,
+              opacity: {
+                  value: 1,
+                  easing: easing
+              },
+              translateX: {
+                  value: 500,
+                  duration: duration
+              },
+              translateY: { value: 0 },
+            }                                
+            break;
+
+          default:
+            var animObj = {
+              targets: el,
+              duration: duration,
+              delay: delay,
+              direction: direction,
+              loop: loop,
+              opacity: {
+                  value: 1,
+                  easing: easing
+              },
+              translateY: {
+                  value: -500,
+                  duration: duration
+              },
+            }                                
+
+            break;
+        }
+
+        if (el) {
+          // set initial opacity
+          if(animObj.hasOwnProperty("opacity")){
+            el.style.opacity = "0";
+          }
+
+          if(animObj.hasOwnProperty("translateX")) {
+            var val = (-1 * animObj.translateX.value);
+
+            el.style.left = val + "px";
+          }
+
+          if(animObj.hasOwnProperty("translateY")) {
+            var val = (-1 * animObj.translateY.value);
+
+            el.style.top = val + "px";
+          }                
+        }
+
+        anime(animObj)
+
+      })
+
+      observer.unobserve(element);
+    } else {
+        if (infinite) {
+
+        }
+    }
+  })
+}
+
+function observerCallbackCurtain(entries, observer) {
+  entries.forEach(function (entry) {
+    var element = entry.target;
+
+    // To be implemented later:
+    var infinite = element.hasAttribute("data-anim-infinite") ? true : false;
+
+    var curtain_color = element.getAttribute("data-de-reveal-curtain-color")
+    // var duration = element.getAttribute("data-de-reveal-duration")
+    var curtain_direction = element.getAttribute("data-de-reveal-curtain-direction")
+    var easing = element.getAttribute("data-de-reveal-easing")
+
+    if (entry.isIntersecting) {
+      // var animated = element.querySelectorAll(".elementor-widget-container");
+
+      // Array.prototype.forEach.call(animated, function(el, i){
+
+        var revealer = new RevealFx(element);
+  
+        revealer.reveal({
+          bgcolor: curtain_color,
+          // duration: duration,
+          direction: curtain_direction,
+          easing: easing,
+          onStart: function(contentEl, revealerEl) { 
+          },
+          onCover: function(contentEl, revealerEl) { 
+            contentEl.style.opacity = 1
+          },
+          onComplete: function(contentEl, revealerEl) { 
+            contentEl.style.opacity = 1; 
+          },
+        });
+      // })
+
+      observer.unobserve(element);
+    } else {
+        if (infinite) {
+
+        }
+    }
+  })
+}
+
+function observerCallbackLetter(entries, observer) {
+  entries.forEach(function (entry) {
+    var element = entry.target;
+    // console.log(element)
+
+    // To be implemented later:
+    var infinite = element.hasAttribute("data-anim-infinite") ? true : false;
+
+    if (entry.isIntersecting) {
+      // get index of animation in animations array
+      // var index = parseInt(element.getAttribute("data-anim-num"));
+
+      // run animation from corresponding animation objects in animations array
+      // var animArray = animationHolder[index].animations;
+      // Array.prototype.forEach.call(animArray, function (animation, i){
+      //     anime(animation)
+      // })
+
+      // unobserve element since animation is not infinite
+
+      var animated = element.querySelectorAll(".elementor-widget-container > *");
+
+      Array.prototype.forEach.call(animated, function(el, i){
+        var hasLetterEffect = el.classList.contains('letter-effect')
+        if ( !hasLetterEffect ) {
+          letterAnim = new TextFx(el)
+          var de_reveal_letter_effects = element.getAttribute("data-dereveal-letter-effects");
+          letterAnim.show(de_reveal_letter_effects)
+        }
+      })
+
+      observer.unobserve(element);
+    } else {
+        if (infinite) {
+
+        }
+    }
+  })
+}
+
+class DeRevealAnimationHandlerClass extends elementorModules.frontend.handlers.Base {
+    getDefaultSettings() {
+        return {
+            selectors: {
+                wrapper: '.de_reveal_animation_yes',
+                widget_container: '.elementor-widget-container',
+            },
+        };
+    }
+
+    getDefaultElements() {
+        const selectors = this.getSettings( 'selectors' );
+        return {
+            $wrapper: this.$element.find( selectors.wrapper ),
+            $widget_container: this.$element.find( selectors.widget_container ),
+        };
+    }
+
+    do_animation(elem) {
+        var attributeValue = elem.context.attributes['class'].nodeValue;
+                    
+        var $arr_classes = attributeValue.split(' ')
+
+        var do_animation = false, $animation_type = 'default', editMode = false, $id, $duration = '2000', $curtain_color = '#000000', $curtain_direction = 'lr', $direction = 'normal', $easing = 'linear', $animation_style = 'fu', $loop_type = 'custom', $loop = '1', is_stagger = false, is_section = false, $letter_effect = 'fx1', letterAnim, reveal_start = '1'
+    
+        jQuery.each($arr_classes, (index, value) => {
+            if ( value.search('de_reveal_animation_yes') === 0 ) {
+                do_animation = true;
+            }
+
+            if ( value.search('de_reveal_animation_type_') === 0 ) {
+              $animation_type = value.replace('de_reveal_animation_type_','')
+            }
+
+            if ( value.search('elementor-section') === 0 ) {
+                is_section = true;
+            }
+
+            if ( value.search('elementor-element-edit-mode') === 0 ) {
+              editMode = true;
+            }
+
+            if ( value.length === 25 && value.search('elementor-element-') === 0 ) {
+              $id = value.replace('elementor-element-','')
+            }
+
+            if ( value.search('de_reveal_curtain_color_') === 0 ) {
+              $curtain_color = value.replace('de_reveal_curtain_color_','')
+            }
+      
+            if ( value.search('de_reveal_curtain_direction_') === 0 ) {
+              $curtain_direction = value.replace('de_reveal_curtain_direction_','')
+            }
+
+            if ( value.search('de_reveal_letter_effects_') === 0 ) {
+              $letter_effect = value.replace('de_reveal_letter_effects_','')
+            }
+
+            if ( value.search('de_reveal_duration_') === 0 ) {
+              $duration = value.replace('de_reveal_duration_','')
+            }
+    
+            if ( value.search('de_reveal_direction_') === 0 ) {
+              $direction = value.replace('de_reveal_direction_','')
+            }
+    
+            if ( value.search('de_reveal_easing_') === 0 ) {
+              $easing = value.replace('de_reveal_easing_','')
+            }
+
+            if ( value.search('de_reveal_loop_') === 0 ) {
+              $loop_type = value.replace('de_reveal_loop_','')
+
+              if ( $loop_type === 'infinite' ) {
+                $loop = true
+              }
+            }
+
+            if (( value.search('de_reveal_custom_loop_') === 0 ) && ($loop_type === 'custom')) {
+              $loop = value.replace('de_reveal_custom_loop_','')
+            }
+
+            if ( value.search('de_reveal_animation_style_') === 0 ) {
+              $animation_style = value.replace('de_reveal_animation_style_','')
+            }
+
+            if ( value.search('de_reveal_stagger_yes') === 0 ) {
+              is_stagger = true;
+            }
+
+            if ( value.search('de_reveal_start_') === 0 ) {
+              reveal_start = value.replace('de_reveal_start_','')
+            }
+        })
+
+        var elementSelector
+        var $target = ''
+
+        if (do_animation) {
+          if (is_stagger) {
+            $target = ".de_reveal_animation_yes.elementor-element-" + $id + " > .elementor-container > .elementor-row > .elementor-column"                        
+          } else {
+            if (is_section) {
+              $target = ".de_reveal_animation_yes.elementor-section.elementor-element-" + $id
+            } else {
+              if ( $animation_type === 'letter' ) {
+                $target = ".de_reveal_animation_yes.elementor-element-" + $id + " > .elementor-widget-container > *" 
+              } else if ( $animation_type === 'blockcurtain' ) {
+                $target = ".de_reveal_animation_yes.elementor-element-" + $id
+              } else {
+                $target = ".de_reveal_animation_yes.elementor-element-" + $id + " > .elementor-widget-container" 
+              }
+            }
+          }
+
+          elementSelector = document.querySelector($target)
+        } else {
+          if (is_stagger) {
+            $target = ".de_reveal_animation_no.elementor-element-" + $id + " > .elementor-container > .elementor-row > .elementor-column"                        
+          } else {
+            if (is_section) {
+              $target = ".de_reveal_animation_no.elementor-section.elementor-element-" + $id
+            } else {
+              if ( $animation_type === 'letter' ) {
+                $target = ".de_reveal_animation_no.elementor-element-" + $id + " > .elementor-widget-container > *"
+              } else if ( $animation_type === 'blockcurtain' )  {
+                $target = ".de_reveal_animation_no.elementor-element-" + $id
+              } else {
+                $target = ".de_reveal_animation_no.elementor-element-" + $id + " > .elementor-widget-container"
+              }
+            }
+          }
+
+          elementSelector = document.querySelector($target)
+        }
+
+        if (do_animation && elementSelector) {
+            if (!editMode) {              
+              // if(reveal_start) {           
+              //     var num = parseFloat(reveal_start);
+              //     observerOptions.threshold = num;
+              // }
+
+              // // initialize intersection observer
+              // observers[$id] = new IntersectionObserver(this.observerCallback, observerOptions);
+
+              // // observe wrapper element
+              // observers[$id].observe(elementSelector);
+            } else { //if (!editMode)
+              if ( $animation_type === 'blockcurtain' ) {
+                var revealer = new RevealFx(elementSelector);
+
+                revealer.reveal({
+                    bgcolor: $curtain_color,
+                    // duration: $duration,
+                    direction: $curtain_direction,
+                    easing: $easing,
+                    onStart: function(contentEl, revealerEl) { contentEl.style.opacity = 0; },
+                    onCover: function(contentEl, revealerEl) { contentEl.style.opacity = 1; },
+                    onComplete: function(contentEl, revealerEl) { contentEl.style.opacity = 1; },
+                });
+
+              } else if ( $animation_type === 'letter' ) { //if ( $animation_type === 'blockcurtain' )
+
+                var hasLetterEffect = elementSelector.classList.contains('letter-effect')
+                var tempInnerHTML = elementSelector.innerHTML
+
+                if ( !hasLetterEffect ) {
+                  letterAnim = new TextFx(elementSelector)
+                  
+                  letterAnim.show($letter_effect, function(){
+                    elementSelector.classList.remove('letter-effect')
+                    elementSelector.innerHTML = tempInnerHTML
+                  })
+                }
+
+              } else { //if ( $animation_type === 'blockcurtain' )
+                switch ($animation_style) {
+                  case 'fu':
+                    var animObj = {
+                      targets: $target,
+                      duration: $duration,
+                      delay: 0,
+                      direction: $direction,
+                      loop: $loop,
+                      opacity: {
+                          value: 1,
+                          easing: $easing
+                      },
+                      translateX: { value: 0 },
+                      translateY: {
+                          value: -500,
+                          duration: $duration
+                      },
+                    }
+                    break;
+                  case 'fd':
+                    var animObj = {
+                      targets: $target,
+                      duration: $duration,
+                      delay: 0,
+                      direction: $direction,
+                      loop: $loop,
+                      opacity: {
+                          value: 1,
+                          easing: $easing
+                      },
+                      translateX: { value: 0 },
+                      translateY: {
+                          value: 500,
+                          duration: $duration
+                      },
+                    }                                                          
+                    break;
+                  case 'fl':
+                    var animObj = {
+                      targets: $target,
+                      duration: $duration,
+                      delay: 0,
+                      direction: $direction,
+                      loop: $loop,
+                      opacity: {
+                          value: 1,
+                          easing: $easing
+                      },
+                      translateX: {
+                          value: -500,
+                          duration: $duration
+                      },
+                      translateY: { value: 0 },
+                    }                             
+                    break;
+                  case 'fr':
+                    var animObj = {
+                      targets: $target,
+                      duration: $duration,
+                      delay: 0,
+                      direction: $direction,
+                      loop: $loop,
+                      opacity: {
+                          value: 1,
+                          easing: $easing
+                      },
+                      translateX: {
+                          value: 500,
+                          duration: $duration
+                      },
+                      translateY: { value: 0 },
+                    }                                
+                    break;
+  
+                  default:
+                    var animObj = {
+                      targets: $target,
+                      duration: $duration,
+                      delay: 0,
+                      direction: $direction,
+                      loop: $loop,
+                      opacity: {
+                          value: 1,
+                          easing: $easing
+                      },
+                      translateY: {
+                          value: -500,
+                          duration: $duration
+                      },
+                    }                                
+  
+                    break;
+                }
+                
+                if (elementSelector) {
+                  // set initial opacity
+                  if(animObj.hasOwnProperty("opacity")){
+                    elementSelector.style.opacity = "0";
+                  }
+    
+                  if(animObj.hasOwnProperty("translateX")) {
+                    var val = (-1 * animObj.translateX.value);
+    
+                    elementSelector.style.left = val + "px";
+                  }
+  
+                  if(animObj.hasOwnProperty("translateY")) {
+                    var val = (-1 * animObj.translateY.value);
+    
+                    elementSelector.style.top = val + "px";
+                  }                
+                }
+  
+                if (is_stagger) {
+                  animObj.delay = anime.stagger(100)
+                }
+  
+                anime(animObj)
+
+              } //if ( $animation_type === 'blockcurtain' )
+            } // if (!editMode)              
+        } else { //if (do_animation)
+          var elementSelector = document.querySelector(".de_reveal_animation_no.elementor-element-" + $id + " > .elementor-widget-container");       
+
+          if (elementSelector) {
+            elementSelector.style.transform = "none"
+          }
+        } //if (do_animation)
+    }
+
+    do_frontend_reveal_default() {
+      // find all animated element wrappers with data-anim attribute
+      animNodes = document.querySelectorAll(".de_reveal_animation_yes.de_reveal_animation_type_default");
+  
+      // For each animated element, set initial state based on animation object in animations array
+      Array.prototype.forEach.call(animNodes, function (element, index) { 
+          // Get threshold settings from class de_reveal_start_
+          var classes = element.getAttribute("class")
+          var arr_classes = classes.split(' ')
+          var de_reveal_start = 1
+          Array.prototype.forEach.call(arr_classes, function(item, num){
+            if ( item.search('de_reveal_start_') === 0 ) {
+              de_reveal_start = item.replace('de_reveal_start_','')
+            }
+
+            if ( item.search('de_reveal_animation_style_') === 0 ) {
+              var de_reveal_animation_style = item.replace('de_reveal_animation_style_','')
+
+              element.setAttribute("data-de-reveal-animation-style", de_reveal_animation_style)
+            }
+
+            if ( item.search('de_reveal_duration_') === 0 ) {
+              var de_reveal_duration = item.replace('de_reveal_duration_','')
+
+              element.setAttribute("data-de-reveal-duration", de_reveal_duration)
+            }
+
+            if ( item.search('de_reveal_direction_') === 0 ) {
+              var de_reveal_direction = item.replace('de_reveal_direction_','')
+
+              element.setAttribute("data-de-reveal-direction", de_reveal_direction)
+            }
+
+            if ( item.search('de_reveal_easing_') === 0 ) {
+              var de_reveal_easing = item.replace('de_reveal_easing_','')
+
+              element.setAttribute("data-de-reveal-easing", de_reveal_easing)
+            }
+
+            var $loop_type = 'custom'
+            var $loop 
+            if ( item.search('de_reveal_loop_') === 0 ) {
+              $loop_type = item.replace('de_reveal_loop_','')
+
+              if ( $loop_type === 'infinite' ) {
+                $loop = true
+                element.setAttribute("data-de-reveal-animation-loop", $loop)
+              }
+            }
+
+            if (( item.search('de_reveal_custom_loop_') === 0 ) && ($loop_type === 'custom')) {
+              $loop = item.replace('de_reveal_custom_loop_','')
+              element.setAttribute("data-de-reveal-animation-loop", $loop)
+            }
+
+            if ( item.search('de_reveal_stagger_yes') === 0 ) {
+              element.setAttribute("data-de-reveal-stagger", "true")
+            }
+
+            if ( item.search('elementor-section') === 0 ) {
+              element.setAttribute("data-de-reveal-section", "true")
+            }
+          })
+          var threshold = de_reveal_start;
+  
+          if(threshold) {           
+              var num = parseFloat(threshold);
+              observerOptions.threshold = num;
+          } else {
+              observerOptions.threshold = defaultThreshold;
+          }
+  
+          // initialize intersection observer
+          observersCurtain[index] = new IntersectionObserver(observerCallbackDefault, observerOptions);
+  
+          // observe wrapper element
+          observersCurtain[index].observe(element);
+          
+      })
+    }
+
+    do_frontend_reveal_curtain() {
+      // find all animated element wrappers with data-anim attribute
+      animNodes = document.querySelectorAll(".de_reveal_animation_yes.de_reveal_animation_type_blockcurtain");
+  
+      // For each animated element, set initial state based on animation object in animations array
+      Array.prototype.forEach.call(animNodes, function (element, index) { 
+          // Get threshold settings from class de_reveal_start_
+          var classes = element.getAttribute("class")
+          var arr_classes = classes.split(' ')
+          var de_reveal_start = 1
+          Array.prototype.forEach.call(arr_classes, function(item, num){
+            if ( item.search('de_reveal_start_') === 0 ) {
+              de_reveal_start = item.replace('de_reveal_start_','')
+            }
+
+            if ( item.search('de_reveal_curtain_color_') === 0 ) {
+              var de_reveal_curtain_color = item.replace('de_reveal_curtain_color_','')
+
+              element.setAttribute("data-de-reveal-curtain-color", de_reveal_curtain_color)
+            }
+
+            if ( item.search('de_reveal_curtain_direction_') === 0 ) {
+              var de_reveal_curtain_direction = item.replace('de_reveal_curtain_direction_','')
+
+              element.setAttribute("data-de-reveal-curtain-direction", de_reveal_curtain_direction)
+            }
+
+            if ( item.search('de_reveal_easing_') === 0 ) {
+              var de_reveal_easing = item.replace('de_reveal_easing_','')
+
+              element.setAttribute("data-de-reveal-easing", de_reveal_easing)
+            }
+
+            if ( item.search('de_reveal_duration_') === 0 ) {
+              var de_reveal_duration = item.replace('de_reveal_duration_','')
+
+              element.setAttribute("data-de-reveal-duration", de_reveal_duration)
+            }
+
+          })
+          var threshold = de_reveal_start;
+  
+          if(threshold) {           
+              var num = parseFloat(threshold);
+              observerOptions.threshold = num;
+          } else {
+              observerOptions.threshold = defaultThreshold;
+          }
+  
+          // initialize intersection observer
+          observersCurtain[index] = new IntersectionObserver(observerCallbackCurtain, observerOptions);
+  
+          // observe wrapper element
+          observersCurtain[index].observe(element);
+          
+      })
+    }
+
+    do_frontend_reveal_letter() {
+      // find all animated element wrappers with data-anim attribute
+      animNodes = document.querySelectorAll(".de_reveal_animation_yes.de_reveal_animation_type_letter");
+  
+      // For each animated element, set initial state based on animation object in animations array
+      Array.prototype.forEach.call(animNodes, function (element, index) {
+          // Add each child element as target for respective animation object
+          // var animated = element.querySelectorAll(".elementor-widget-container > *");
+  
+          // Array.prototype.forEach.call(animated, function(el, i){
+          //     var animObj = animationHolder[index].animations[i];
+  
+          //     animObj.targets = el;
+          // })
+  
+          // Get threshold settings from class de_reveal_start_
+          var classes = element.getAttribute("class")
+          var arr_classes = classes.split(' ')
+          var de_reveal_start = 1
+          Array.prototype.forEach.call(arr_classes, function(item, num){
+              if ( item.search('de_reveal_start_') === 0 ) {
+                de_reveal_start = item.replace('de_reveal_start_','')
+              }
+
+              if ( item.search('de_reveal_letter_effects_') === 0 ) {
+                var de_reveal_letter_effects = item.replace('de_reveal_letter_effects_','')
+
+                element.setAttribute("data-dereveal-letter-effects", de_reveal_letter_effects)
+              }
+           })
+          var threshold = de_reveal_start;
+  
+          if(threshold) {           
+              var num = parseFloat(threshold);
+              observerOptions.threshold = num;
+          } else {
+              observerOptions.threshold = defaultThreshold;
+          }
+  
+          // initialize intersection observer
+          observersLetter[index] = new IntersectionObserver(observerCallbackLetter, observerOptions);
+  
+          // observe wrapper element
+          observersLetter[index].observe(element);
+          
+      })
+    }
+
+    do_frontend_reveal() {
+      this.do_frontend_reveal_default()
+      this.do_frontend_reveal_curtain()
+      this.do_frontend_reveal_letter()
+    }
+
+    onInit() {
+      var editMode = document.querySelector('.elementor-editor-active')
+
+      // Is in elementor editor
+      if (editMode) {
+        var animObject
+  
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === "class") {
+                    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+                    
+                    var $arr_classes = attributeValue.split(' ')
+  
+                    var do_animation = false, $animation_type = 'default', $id, $duration = '2000', $curtain_color = '#000000', $curtain_direction = 'lr', $direction = 'normal', $easing = 'linear', $animation_style = 'fu', $loop_type = 'custom', $loop = '1', is_stagger = false, is_section = false, $letter_effect = 'fx1', letterAnim
+              
+                    jQuery.each($arr_classes, (index, value) => {
+                      if ( value.search('de_reveal_animation_yes') === 0 ) {
+                        do_animation = true;
+                      }
+  
+                      if ( value.search('de_reveal_animation_type_') === 0 ) {
+                        $animation_type = value.replace('de_reveal_animation_type_','')
+                      }          
+  
+                      if ( value.search('elementor-section') === 0 ) {
+                        is_section = true;
+                      }
+  
+                      if ( value.length === 25 && value.search('elementor-element-') === 0 ) {
+                        $id = value.replace('elementor-element-','')
+                      }
+  
+                      if ( value.search('de_reveal_curtain_color_') === 0 ) {
+                        $curtain_color = value.replace('de_reveal_curtain_color_','')
+                      }
+                
+                      if ( value.search('de_reveal_curtain_direction_') === 0 ) {
+                        $curtain_direction = value.replace('de_reveal_curtain_direction_','')
+                      }
+  
+                      if ( value.search('de_reveal_letter_effects_') === 0 ) {
+                        $letter_effect = value.replace('de_reveal_letter_effects_','')
+                      }
+          
+                      if ( value.search('de_reveal_duration_') === 0 ) {
+                        $duration = value.replace('de_reveal_duration_','')
+                      }
+              
+                      if ( value.search('de_reveal_direction_') === 0 ) {
+                        $direction = value.replace('de_reveal_direction_','')
+                      }
+              
+                      if ( value.search('de_reveal_easing_') === 0 ) {
+                        $easing = value.replace('de_reveal_easing_','')
+                      }
+  
+                      if ( value.search('de_reveal_loop_') === 0 ) {
+                        $loop_type = value.replace('de_reveal_loop_','')
+  
+                        if ( $loop_type === 'infinite' ) {
+                          $loop = true
+                        }
+                      }
+  
+                      if (( value.search('de_reveal_custom_loop_') === 0 ) && ($loop_type === 'custom')) {
+                        $loop = value.replace('de_reveal_custom_loop_','')
+                      }
+  
+                      if ( value.search('de_reveal_animation_style_') === 0 ) {
+                        $animation_style = value.replace('de_reveal_animation_style_','')
+                      }
+  
+                      if ( value.search('de_reveal_stagger_yes') === 0 ) {
+                        is_stagger = true;
+                      }
+  
+                    })
+  
+                    var elementSelector
+                    var $target = ''
+  
+                    if (do_animation) {
+                      if (is_stagger) {
+                        $target = ".de_reveal_animation_yes.elementor-element-" + $id + " > .elementor-container > .elementor-row > .elementor-column"                        
+                      } else {
+                        if (is_section) {
+                          $target = ".de_reveal_animation_yes.elementor-section.elementor-element-" + $id
+                        } else {
+                          if ( $animation_type === 'letter' ) {
+                            $target = ".de_reveal_animation_yes.elementor-element-" + $id + " > .elementor-widget-container > *" 
+                          } else {
+                            $target = ".de_reveal_animation_yes.elementor-element-" + $id + " > .elementor-widget-container"
+                          }
+                        }
+                      }
+  
+                      elementSelector = document.querySelector($target)
+                    } else {
+                      if (is_stagger) {
+                        $target = ".de_reveal_animation_no.elementor-element-" + $id + " > .elementor-container > .elementor-row > .elementor-column"                        
+                      } else {
+                        if (is_section) {
+                          $target = ".de_reveal_animation_no.elementor-section.elementor-element-" + $id
+                        } else {
+                          if ( $animation_type === 'letter' ) {
+                            $target = ".de_reveal_animation_no.elementor-element-" + $id + " > .elementor-widget-container > *"
+                          } else {
+                            $target = ".de_reveal_animation_no.elementor-element-" + $id + " > .elementor-widget-container"
+                          }
+                        }
+                      }
+  
+                      elementSelector = document.querySelector($target)
+                    }
+  
+  
+                    if (do_animation && elementSelector) {
+                      if ( $animation_type === 'blockcurtain' ) {
+  
+                        var revealer = new RevealFx(elementSelector);
+  
+                        revealer.reveal({
+                            bgcolor: $curtain_color,
+                            duration: $duration,
+                            direction: $curtain_direction,
+                            easing: $easing,
+                            onStart: function(contentEl, revealerEl) { contentEl.style.opacity = 0; },
+                            onCover: function(contentEl, revealerEl) { contentEl.style.opacity = 1; },
+                            onComplete: function(contentEl, revealerEl) { contentEl.style.opacity = 1; },
+                        });
+  
+                      } else if ( $animation_type === 'letter' ) { //if ( $animation_type === 'blockcurtain' )
+  
+                        var hasLetterEffect = elementSelector.classList.contains('letter-effect')
+                        var tempInnerHTML = elementSelector.innerHTML
+  
+                        if ( !hasLetterEffect ) {
+                          letterAnim = new TextFx(elementSelector)
+                          
+                          letterAnim.show($letter_effect, function(){
+                            elementSelector.classList.remove('letter-effect')
+                            elementSelector.innerHTML = tempInnerHTML
+                          })
+                        }
+  
+                      } else { //if ( $animation_type === 'blockcurtain' )
+                        switch ($animation_style) {
+                          case 'fu':
+                            var animObj = {
+                              targets: $target,
+                              duration: $duration,
+                              delay: 0,
+                              direction: $direction,
+                              loop: $loop,
+                              opacity: {
+                                  value: 1,
+                                  easing: $easing
+                              },
+                              translateX: { value: 0 },
+                              translateY: {
+                                  value: -100,
+                                  duration: $duration
+                              },
+                            }
+                            break;
+                          case 'fd':
+                            var animObj = {
+                              targets: $target,
+                              duration: $duration,
+                              delay: 0,
+                              direction: $direction,
+                              loop: $loop,
+                              opacity: {
+                                  value: 1,
+                                  easing: $easing
+                              },
+                              translateX: { value: 0 },
+                              translateY: {
+                                  value: 100,
+                                  duration: $duration
+                              },
+                            }                                                          
+                            break;
+                          case 'fl':
+                            var animObj = {
+                              targets: $target,
+                              duration: $duration,
+                              delay: 0,
+                              direction: $direction,
+                              loop: $loop,
+                              opacity: {
+                                  value: 1,
+                                  easing: $easing
+                              },
+                              translateX: {
+                                  value: -100,
+                                  duration: $duration
+                              },
+                              translateY: { value: 0 },
+                            }                             
+                            break;
+                          case 'fr':
+                            var animObj = {
+                              targets: $target,
+                              duration: $duration,
+                              delay: 0,
+                              direction: $direction,
+                              loop: $loop,
+                              opacity: {
+                                  value: 1,
+                                  easing: $easing
+                              },
+                              translateX: {
+                                  value: 100,
+                                  duration: $duration
+                              },
+                              translateY: { value: 0 },
+                            }                                
+                            break;
+  
+                          default:
+                            var animObj = {
+                              targets: $target,
+                              duration: $duration,
+                              delay: 0,
+                              direction: $direction,
+                              loop: $loop,
+                              opacity: {
+                                  value: 1,
+                                  easing: $easing
+                              },
+                              translateY: {
+                                  value: -100,
+                                  duration: $duration
+                              },
+                            }                                
+  
+                            break;
+                        }
+  
+                        if (is_stagger) {
+                          animObj.delay = anime.stagger(500)
+  
+                          // set initial opacity
+                          $($target).each( function() {
+                            if(animObj.hasOwnProperty("opacity")){
+                              $(this).css('opacity',0);
+                            }
+              
+                            if(animObj.hasOwnProperty("translateX")) {
+                              var val = (-1 * animObj.translateX.value);
+              
+                              $(this).css('left',val + "px");
+                            }
+  
+                            if(animObj.hasOwnProperty("translateY")) {
+                              var val = (-1 * animObj.translateY.value);
+              
+                              $(this).css('top',val + "px");
+                            }
+                          })
+  
+                        } else {
+                          // set initial opacity
+                          if(animObj.hasOwnProperty("opacity")){
+                            elementSelector.style.opacity = "0";
+                          }
+            
+                          if(animObj.hasOwnProperty("translateX")) {
+                            var val = (-1 * animObj.translateX.value);
+            
+                            elementSelector.style.left = val + "px";
+                          }
+  
+                          if(animObj.hasOwnProperty("translateY")) {
+                            var val = (-1 * animObj.translateY.value);
+            
+                            elementSelector.style.top = val + "px";
+                          }
+                        }
+  
+                        if (animObject) {
+                          animObject.remove(elementSelector)
+                          // console.log('removed')
+                        }
+  
+                        animObject = anime(animObj)
+                      } //if ( $animation_type === 'blockcurtain' )
+  
+                    } else { //if (do_animation)
+                      if (elementSelector) {
+                        elementSelector.style.transform = "none"
+                      }
+                    } //if (do_animation)
+                }
+            });
+        });
+  
+        if (this.$element) {
+          var elementId = this.$element.context.attributes['data-id'].nodeValue;
+          var elementSelector = document.querySelector("[data-id='" + elementId + "']");
+          if (elementSelector) {
+            observer.observe(elementSelector, {
+                attributes: true
+            });
+  
+            this.do_animation(this.$element);
+          }
+        }
+      } else { //if (editMode)
+        this.do_frontend_reveal()
+      } //if (editMode)
+    } //onInit()
+
+    bindEvents() {
+    }
+}
+
+jQuery( window ).on( 'elementor/frontend/init', () => {
+  const addHandler = ( $element ) => {
+    elementorFrontend.elementsHandler.addHandler( DeRevealAnimationHandlerClass, {
+      $element,
+    } );
+  };
+
+  elementorFrontend.hooks.addAction( 'frontend/element_ready/global', addHandler );
+} );

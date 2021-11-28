@@ -1,0 +1,278 @@
+class DeStaggeringHandlerClass extends elementorModules.frontend.handlers.Base {
+    getDefaultSettings() {
+        return {
+            selectors: {
+                wrapper: '.de_staggering_hover_yes',
+                widget_container: '.de_staggering_animation_yes',
+            },
+        };
+    }
+
+    getDefaultElements() {
+        const selectors = this.getSettings( 'selectors' );
+        return {
+            $wrapper: this.$element.find( selectors.wrapper ),
+            $widget_container: this.$element.find( selectors.widget_container ),
+        };
+    }
+
+    do_frontend_animation() {
+      // find all animated element wrappers with data-anim attribute
+      animNodes = document.querySelectorAll(".de_staggering_hover_yes");
+  
+      // For each animated element, set initial state based on animation object in animations array
+      Array.prototype.forEach.call(animNodes, function (element, index) { 
+
+        var column_classes = element.classList
+
+        var delay_increment = 500, parent_animation_type = 'fadeIn'
+        jQuery.each(column_classes, (index, value) => {
+          if ( value.search('de_staggering_parent_animation_type_') === 0 ) {
+            parent_animation_type = value.replace('de_staggering_parent_animation_type_','')
+          }
+
+          if ( value.search('de_staggering_child_delay_') === 0 ) {
+            delay_increment = parseInt(value.replace('de_staggering_child_delay_',''))
+          }
+        })
+
+        // On Column Hover
+        element.addEventListener("mouseenter", function(e) {
+          e.preventDefault;
+
+          // find all animated element wrappers with data-anim attribute
+          var childs = element.querySelectorAll(".de_staggering_animation_yes");
+          var delay = 0
+
+          Array.prototype.forEach.call(childs, function (el, index) { 
+
+            delay = delay + delay_increment
+
+            var arr_classes = el.classList
+
+            var animation_type = 'inherited'
+            jQuery.each(arr_classes, (index, value) => {
+              if ( value.search('de_staggering_animation_type_') === 0 ) {
+                animation_type = value.replace('de_staggering_animation_type_','')
+              }
+            })
+
+            if ( animation_type === 'inherited' ) {
+              animation_type = parent_animation_type
+            }
+
+
+            var animation_delay = 'animation-delay:' + delay + 'ms'
+            el.setAttribute('style',animation_delay)
+
+            // -> removing the class
+            el.classList.remove("animate__animated");
+            el.classList.remove("animate__" + animation_type);
+            
+            // -> triggering reflow /* The actual magic */
+            // without this it wouldn't work. Try uncommenting the line and the transition won't be retriggered.
+            // Oops! This won't work in strict mode. Thanks Felis Phasma!
+            // element.offsetWidth = element.offsetWidth;
+            // Do this instead:
+            void el.offsetWidth;
+            
+            // -> and re-adding the class
+            el.classList.add("animate__animated");
+            el.classList.add("animate__" + animation_type);
+          })
+          
+        }, false);
+      })
+    }
+
+    onInit() {
+      var editMode = document.querySelector('.elementor-editor-active')
+
+      // Is in elementor editor
+      if (editMode) {
+        var observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.attributeName === "class") {
+
+              var classes = $(mutation.target).prop(mutation.attributeName);
+              var arr_classes = classes.split(' ')
+              var do_animation = false, delay_increment = 500, parent_animation_type = 'fadeIn'
+              var de_staggering_hover_yes = false, de_staggering_preview_on_hover_yes = false
+
+              jQuery.each(arr_classes, (index, value) => {
+                if ( value.search('de_staggering_hover_yes') === 0 ) {
+                  de_staggering_hover_yes = true
+                }
+
+                if ( value.search('de_staggering_preview_on_hover_yes') === 0 )  {
+                  de_staggering_preview_on_hover_yes = true;
+                }
+
+                if ( value.search('de_staggering_parent_animation_type_') === 0 ) {
+                  parent_animation_type = value.replace('de_staggering_parent_animation_type_','')
+                }
+      
+                if ( value.search('de_staggering_child_delay_') === 0 ) {
+                  delay_increment = parseInt(value.replace('de_staggering_child_delay_',''))
+                }      
+              })
+
+              if ( de_staggering_hover_yes && de_staggering_preview_on_hover_yes ) {
+                do_animation = true
+              }
+  
+              var elementId = mutation.target.attributes['data-id'].nodeValue;
+              var elementSelector = document.querySelector("[data-id='" + elementId + "']");
+
+              if ( do_animation ) {
+    
+                mutation.target.onmouseenter = function(e) {
+                  // find all animated element wrappers with data-anim attribute
+                  var childs = elementSelector.querySelectorAll(".de_staggering_animation_yes");
+                  var delay = 0
+
+                  Array.prototype.forEach.call(childs, function (el, index) { 
+
+                    delay = delay + delay_increment
+
+                    var arr_classes = el.classList
+                    var remove_classes = []
+
+                    var animation_type = 'inherited'
+                    jQuery.each(arr_classes, (index, value) => {
+                      if ( value.search('de_staggering_animation_type_') === 0 ) {
+                        animation_type = value.replace('de_staggering_animation_type_','')
+                        remove_classes.push(value)
+                      }
+
+                      if ( value.search('animate__') === 0 ) {
+                        // -> removing the class
+                        remove_classes.push(value)
+                      }                     
+                    })
+
+                    jQuery.each(remove_classes, (index, value) => {
+                      el.classList.remove(value)
+                    })
+
+                    // if ( animation_type === 'inherited' ) {
+                    //   animation_type = parent_animation_type
+                    // }
+
+
+                    var animation_delay = 'animation-delay:' + delay + 'ms'
+                    el.setAttribute('style',animation_delay)
+
+                    // -> removing the class
+                    // el.classList.remove("animate__animated");
+                    // el.classList.remove("animate__" + animation_type);
+                    
+                    // -> triggering reflow /* The actual magic */
+                    // without this it wouldn't work. Try uncommenting the line and the transition won't be retriggered.
+                    // Oops! This won't work in strict mode. Thanks Felis Phasma!
+                    // element.offsetWidth = element.offsetWidth;
+                    // Do this instead:
+                    void el.offsetWidth;
+                    
+                    // -> and re-adding the class
+
+                    el.classList.add("de_staggering_animation_type_" + animation_type);
+                    el.classList.add("animate__animated");
+                    if ( animation_type === 'inherited' ) {
+                      el.classList.add("animate__" + parent_animation_type);
+                    } else {
+                      el.classList.add("animate__" + animation_type);
+                    }
+
+                  })
+                }
+              } else {
+                if ( elementSelector ) {
+                  // find all animated element wrappers with data-anim attribute
+                  var childs = elementSelector.querySelectorAll(".de_staggering_animation_yes");
+  
+                  Array.prototype.forEach.call(childs, function (el, index) { 
+  
+                    var arr_classes = el.classList
+                    var remove_classes = []
+  
+                    var animation_type = 'inherited'
+                    jQuery.each(arr_classes, (index, value) => {
+                      if (value) {
+                        if ( value.search('de_staggering_animation_type_') === 0 ) {
+                          animation_type = value.replace('de_staggering_animation_type_','')
+                        }
+    
+                        if ( value.search('animate__') === 0 ) {
+                          // -> removing the class
+                          remove_classes.push(value)
+                        }                     
+                      }
+                    })
+  
+                    jQuery.each(remove_classes, (index, value) => {
+                      el.classList.remove(value)
+                    })
+  
+                    // if ( animation_type === 'inherited' ) {
+                    //   animation_type = parent_animation_type
+                    // }
+  
+                    // -> removing the class
+                    // el.classList.remove("animate__animated");
+                    // el.classList.remove("animate__" + animation_type);                    
+                  })
+  
+                  mutation.target.onmouseenter = null
+                }
+              }
+            }
+          });
+        });
+
+        if (this.$element) {
+          var element_type = this.$element.context.attributes['data-element_type'].value;
+
+          if ( element_type === 'column' ) {
+            var elementId = this.$element.context.attributes['data-id'].nodeValue;
+            var elementSelector = document.querySelector("[data-id='" + elementId + "']");
+            if (elementSelector) {
+              observer.observe(elementSelector, {
+                  attributes: true
+              });
+  
+              // console.log('disini')
+              // console.log(this.$element)
+            }
+          }
+        }
+
+
+      } else { //if (editMode)
+        this.do_frontend_animation()
+      } //if (editMode)
+    } //onInit()
+
+    bindEvents() {
+      // this.elements.$wrapper.on( 'mouseenter', function(e) {
+      //   e.preventDefault
+      //   console.log('mouse enter')
+      // })
+
+      // this.elements.$widget_container.on( 'click', function(e) {
+      //   e.preventDefault
+      //   console.log('clicked')
+      // })
+
+    }
+}
+
+jQuery( window ).on( 'elementor/frontend/init', () => {
+  const addHandler = ( $element ) => {
+    elementorFrontend.elementsHandler.addHandler( DeStaggeringHandlerClass, {
+      $element,
+    } );
+  };
+
+  elementorFrontend.hooks.addAction( 'frontend/element_ready/global', addHandler );
+} );
